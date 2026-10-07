@@ -139,12 +139,16 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     <p class="hint" id="pdfMsg" aria-live="polite" style="margin:8px 0 0"></p>
   </fieldset>
 
-  <fieldset><legend>Database (Google Sheets)</legend>
+  <fieldset><legend>Account at database</legend>
     <p class="hint" id="dbMsg" aria-live="polite" style="margin:6px 0 0">Kinokonekta...</p>
-    <div id="loginBox" hidden>
-      <label for="pw">Password</label>
-      <input id="pw" type="password" autocomplete="current-password">
-      <button type="button" id="btnLogin">Mag-connect</button>
+    <div id="authBox" hidden>
+      <label for="auUser">Username</label>
+      <input id="auUser" autocomplete="username" autocapitalize="none">
+      <label for="auPass">Password</label>
+      <input id="auPass" type="password" autocomplete="current-password">
+      <div id="auCodeWrap" hidden><label for="auCode">Registration code (hingin sa admin)</label><input id="auCode" autocomplete="off"></div>
+      <button type="button" id="btnAuth">Mag-login</button>
+      <button type="button" class="sm" id="btnMode">Wala pang account? Mag-sign up</button>
     </div>
     <div id="dbTools" hidden>
       <div class="two"><button type="button" id="btnSaveDb">I-save sa database</button><button type="button" class="sm" id="btnNew">Bagong notice</button></div>
@@ -355,33 +359,46 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 
   // ---------- Google Sheets database ----------
   var configured=API_URL.indexOf("PASTE_")!==0;
-  var pw="";try{pw=sessionStorage.getItem("nt_pw")||""}catch(e){}
-  var all=[],curId=null,pendingDel=null,loggedIn=false;
-  var ERR={unauthorized:"Mali ang password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",not_configured:"Wala pang APP_PASSWORD sa Apps Script.",server_error:"May error sa server.",bad_action:"May error sa server."};
+  var token="",who="";try{token=sessionStorage.getItem("nt_tok")||"";who=sessionStorage.getItem("nt_who")||""}catch(e){}
+  var all=[],curId=null,pendingDel=null,loggedIn=false,mode="login";
+  var ERR={bad_login:"Mali ang username o password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",pending:"Hinihintay pa ang approval ng admin.",disabled:"Naka-disable ang account na ito.",session:"Nag-expire ang login. Mag-login ulit.",not_configured:"Hindi pa kumpleto ang setup ng Apps Script.",bad_username:"Username: 3 hanggang 30 letra, numero, . _ -",weak_password:"Password: hindi bababa sa 8 characters.",bad_code:"Mali ang registration code.",exists:"May gumagamit na ng username na iyon.",server_error:"May error sa server.",bad_action:"May error sa server."};
 
   async function api(action,extra){
-    var body=Object.assign({password:pw,action:action},extra||{});
+    var body=Object.assign({token:token,action:action},extra||{});
     var r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
     return r.json();
   }
-  function showTools(on){
-    loggedIn=on;$("dbTools").hidden=!on;$("loginBox").hidden=on||!configured;
+  function setSession(t,u){token=t;who=u;try{sessionStorage.setItem("nt_tok",t);sessionStorage.setItem("nt_who",u)}catch(e){}}
+  function clearSession(){token="";who="";try{sessionStorage.removeItem("nt_tok");sessionStorage.removeItem("nt_who")}catch(e){}}
+  function showTools(on){loggedIn=on;$("dbTools").hidden=!on;$("authBox").hidden=on||!configured}
+  function setMode(m){
+    mode=m;$("auCodeWrap").hidden=(m!=="signup");
+    $("btnAuth").textContent=m==="signup"?"Gumawa ng account":"Mag-login";
+    $("btnMode").textContent=m==="signup"?"May account na? Mag-login":"Wala pang account? Mag-sign up";
+    $("auPass").setAttribute("autocomplete",m==="signup"?"new-password":"current-password");
   }
   async function refresh(){
     var r=await api("list");
     if(!r.ok)throw r;
-    all=r.records||[];render();say(dbMsg,all.length+" naka-save.");
+    all=r.records||[];render();say(dbMsg,"Naka-login: "+who+" ("+all.length+" naka-save).");
   }
-  async function connect(silent){
+  async function connect(){
     if(!configured){say(dbMsg,"Wala pang database. Ilagay ang Apps Script URL sa index.html (tingnan ang SETUP.md). Gumagana pa rin ang print, PDF, at Excel ng kasalukuyang form.");return}
+    try{await refresh();showTools(true)}
+    catch(e){clearSession();showTools(false);say(dbMsg,(e&&e.error==="session")?ERR.session:"Mag-login para mag-connect.")}
+  }
+  async function submitAuth(){
+    var u=$("auUser").value.trim(),p=$("auPass").value,btn=$("btnAuth");
+    if(!u||!p){say(dbMsg,"Ilagay ang username at password.");return}
+    btn.disabled=true;
     try{
-      await refresh();showTools(true);
-      try{sessionStorage.setItem("nt_pw",pw)}catch(e){}
-    }catch(e){
-      showTools(false);pw="";try{sessionStorage.removeItem("nt_pw")}catch(x){}
-      say(dbMsg,(e&&e.error&&ERR[e.error])||(silent?"Ilagay ang password para mag-connect.":"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL."));
-      if(silent&&!(e&&e.error))say(dbMsg,"Ilagay ang password para mag-connect.");
-    }
+      var r=await api(mode==="signup"?"signup":"login",{username:u,password:p,code:$("auCode").value});
+      if(!r.ok){say(dbMsg,ERR[r.error]||"Hindi nagawa.");btn.disabled=false;return}
+      $("auPass").value="";$("auCode").value="";
+      if(r.pending){say(dbMsg,"Nagawa ang account. Hintayin ang approval ng admin bago mag-login.");setMode("login");btn.disabled=false;return}
+      setSession(r.token,r.username);await refresh();showTools(true);
+    }catch(e){say(dbMsg,(e&&e.error&&ERR[e.error])||"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL.")}
+    btn.disabled=false;
   }
   function render(){
     var q=($("dbSearch").value||"").toLowerCase();
@@ -404,10 +421,14 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     });
   }
   $("dbSearch").addEventListener("input",render);
-  $("btnLogin").addEventListener("click",function(){pw=$("pw").value;$("pw").value="";connect(false)});
-  $("pw").addEventListener("keydown",function(e){if(e.key==="Enter")$("btnLogin").click()});
+  $("btnAuth").addEventListener("click",submitAuth);
+  $("btnMode").addEventListener("click",function(){setMode(mode==="login"?"signup":"login")});
+  $("auPass").addEventListener("keydown",function(e){if(e.key==="Enter")submitAuth()});
   $("btnRefresh").addEventListener("click",function(){refresh().catch(function(){say(dbMsg,"Hindi ma-refresh.")})});
-  $("btnLogout").addEventListener("click",function(){pw="";all=[];curId=null;try{sessionStorage.removeItem("nt_pw")}catch(e){}render();showTools(false);say(dbMsg,"Naka-logout. Ilagay ang password para mag-connect.")});
+  $("btnLogout").addEventListener("click",async function(){
+    try{await api("logout")}catch(e){}
+    clearSession();all=[];curId=null;render();showTools(false);say(dbMsg,"Naka-logout. Mag-login para mag-connect.");
+  });
 
   btnSave.addEventListener("click",async function(){
     btnSave.disabled=true;
@@ -426,11 +447,11 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     say(dbMsg,"Bagong notice. I-save para madagdag sa database.");render();
   });
 
-  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice"];
+  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice","Na-save ni"];
   function rowOf(d,when){
     var rq=(d.rows||[]).map(function(r){return [r.n,r.a,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
     var ex=(d.resp||[]).map(function(r){return [r.n,r.p,r.b,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
-    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||""];
+    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||"",d.savedBy||""];
   }
   $("btnXlsx").addEventListener("click",function(){
     if(!window.XLSX){say(pdfMsg,"Hindi na-load ang Excel tool.");return}
@@ -443,10 +464,10 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     XLSX.writeFile(wb,"Notices of Conference.xlsx");
   });
 
-  showTools(false);
-  if(!configured){connect(false)}
-  else if(pw){connect(true)}
-  else{say(dbMsg,"Ilagay ang password para mag-connect.")}
+  showTools(false);setMode("login");
+  if(!configured){connect()}
+  else if(token){connect()}
+  else{say(dbMsg,"Mag-login o mag-sign up para ma-access ang database.")}
 })();
 </script>
 </body>
