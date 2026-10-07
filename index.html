@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Notice of Conference</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#e9ece8;--panel:#fff;--ink:#1d2421;--muted:#5d6a64;--line:#c9d1cc;--accent:#1f5c4a;--paper:#fff;--paper-ink:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5}}
+:root[data-theme="dark"]{--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;width:100%;max-width:none;min-height:100vh;margin:0;padding:20px}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+.editor{max-height:calc(100vh - 40px);overflow-y:auto}
+.fs{margin:0 0 12px!important;background:transparent!important;color:var(--accent)!important;border:1px solid var(--accent)!important}
+.editor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;align-self:start;position:sticky;top:12px}
+@media(max-width:860px){.editor{position:static;max-height:none}}
+.editor h2{font-size:16px;margin:0 0 4px}
+.editor p.hint{margin:0 0 14px;color:var(--muted);font-size:13px}
+fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:12px 0 4px}
+legend{font-weight:600;padding-right:8px;font-size:14px}
+label{display:block;font-size:13px;color:var(--muted);margin:8px 0 3px}
+input,textarea{width:100%;font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button.sm{background:transparent;color:var(--accent);border:1px dashed var(--accent);margin-top:10px}
+.rqrow{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;margin-top:8px;align-items:center}
+.rqrow button{margin:0;width:auto;padding:6px 9px;background:transparent;color:var(--muted);border:1px solid var(--line)}
+#rqTable p{margin:0 0 8px}
+#rqTable p:last-child{margin:0}
+button{margin-top:14px;width:100%;font:inherit;font-weight:600;padding:9px;border:0;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer}
+:root[data-theme="dark"] button{color:#0b1410}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.two button{margin-top:10px}
+.rsrow{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.rsrow button{grid-column:1/-1;margin:0;width:auto;justify-self:end;padding:5px 10px;font-size:12px;background:transparent;color:var(--muted);border:1px solid var(--line)}
+#rsTable p{margin:8px 0 0}
+.dbl{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:6px;margin-top:8px}
+.dbl:empty{display:none}
+.rec{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--line);align-items:center}
+.rec:last-child{border-bottom:0}
+.rec .meta{flex:1;min-width:0;font-size:13px;overflow-wrap:anywhere}
+.rec .meta small{display:block;color:var(--muted)}
+.rec button{margin:0;width:auto;padding:5px 8px;font-size:12px;background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button:disabled{opacity:.5;cursor:default}
+.sheet-scroll{overflow-x:auto}
+.paper{position:relative;overflow:hidden;background:var(--paper);color:var(--paper-ink);min-width:8.5in;max-width:8.5in;min-height:13in;margin:0 auto;padding:0 1in 1in;
+ font:12pt/1.4 "Times New Roman",Times,serif;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+.c{text-align:center}
+.pg{width:100%;border-collapse:collapse}
+.pg>thead{display:table-header-group}
+.pg>thead>tr>td,.pg>tbody>tr>td{padding:0;vertical-align:top}
+.lh{padding-top:.3in;display:flex;align-items:center;justify-content:space-between;gap:.05in;margin:0 0 6px}
+.lh .l1{width:.86in;height:.9in;flex:none}
+.ltxt{flex:1;min-width:0;text-align:center;font-size:12pt;line-height:1.25}
+.ltxt .hd b{font-size:12pt}
+.lr{display:flex;align-items:center;gap:.04in;flex:none}
+.lr img{flex:none}
+.lr .bp{width:.71in;height:.68in}
+.lr .lg2{width:.84in;height:.52in}
+.lr .lg3{width:.66in;height:.65in}
+.hd{margin:0}
+.lp{text-align:left;margin-top:14px}
+.ul{border:0;border-top:2px solid #111;margin:2px 0 0;height:0}
+.hd b{font-size:12pt}
+.title{font-weight:700;font-size:12pt;margin:18px 0 10px}
+.parties{width:100%;border-collapse:collapse;margin:0 0 10px}
+.parties td{border:1px solid #111;padding:10px 12px;vertical-align:top;width:50%}
+.parties .lb{font-weight:700;margin-bottom:6px;display:block}
+.fill{white-space:pre-line;overflow-wrap:anywhere}
+.ph{color:#9a9a9a}
+.det{border-collapse:collapse;width:100%;margin:12px 0}
+.det td{border:1px solid #111;padding:2px 8px;line-height:1.2;vertical-align:top}
+.det td:first-child{font-weight:700;white-space:nowrap;width:1%}
+.det td.co{width:1%;text-align:center;border-left:0;border-right:0;padding:2px 4px}
+p.t{text-indent:36px;text-align:justify;margin:10px 0}
+.sig{margin:26px 0 0 auto;width:55%;text-align:center}
+.nb{margin-top:26px}
+.nb b{display:block;margin-top:28px}
+@page{size:8.5in 13in;margin:0 1in 1in}
+@media print{
+ body{background:#fff}.wrap{display:block;padding:0;max-width:none}.editor{display:none}
+ .sheet-scroll{overflow:visible}
+ html,body{margin:0;padding:0}
+ .paper{width:100%;box-sizing:border-box}.paper{box-shadow:none;min-width:0;max-width:none;min-height:0;padding:0}
+ .paper{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+<form class="editor" id="form" onsubmit="return false">
+  <button type="button" class="fs" id="fsBtn">Full screen</button>
+  <h2>Editable na parte</h2>
+  <p class="hint">Ito lang ang puwedeng baguhin. Naka-lock ang buong layout at ang ibang teksto.</p>
+
+  <fieldset><legend>Requesting Party (sa itaas ng notice)</legend>
+    <label for="rqOut">Pangalan</label><input id="rqOut" value="Juan Dela Cruz">
+  </fieldset>
+
+  <fieldset><legend>Requesting Party (sa loob ng table)</legend>
+    <p class="hint" style="margin:6px 0 0">Ang una ay main requesting party (may address). Puwedeng dagdagan; pangalan lang o pangalan at numero.</p>
+    <div id="rqRows"></div>
+    <button type="button" class="sm" id="rqAdd">+ Dagdag na requesting party</button>
+  </fieldset>
+
+  <fieldset><legend>Responding Party</legend>
+    <label for="rsName">Pangalan</label><input id="rsName" value="Maria Santos">
+    <label for="rsPos">Position</label><input id="rsPos" value="Manager">
+    <label for="rsBiz">Establishment</label><input id="rsBiz" value="Sample Business Name">
+    <label for="rsAddr">Address</label><input id="rsAddr" value="Street, Barangay, City">
+    <label for="rsTel">Contact no.</label><input id="rsTel" value="09XXXXXXXXX">
+    <p class="hint" style="margin:10px 0 0">Karagdagang responding party (optional). Lalabas sa table.</p>
+    <div id="rsRows"></div>
+    <button type="button" class="sm" id="rsAdd">+ Dagdag na responding party</button>
+  </fieldset>
+
+  <fieldset><legend>Issue</legend>
+    <label for="issue">Issues</label><textarea id="issue" rows="2">Others: Refund Emergency Cash Bond</textarea>
+  </fieldset>
+
+  <fieldset><legend>Conference</legend>
+    <label for="date">Petsa (puwedeng higit isa)</label><input id="date" value="April 13 and 20, 2026">
+    <label for="time">Oras</label><input id="time" value="3:00 P.M">
+  </fieldset>
+
+  <fieldset><legend>Petsa ng Notice</legend>
+    <label for="nDate">Cebu City, Philippines, ...</label><input id="nDate" value="March 27, 2026">
+  </fieldset>
+
+  <fieldset><legend>I-print o i-save</legend>
+    <div class="two"><button type="button" id="btnPrint">I-print</button><button type="button" id="btnPdf">I-save bilang PDF</button></div>
+    <p class="hint" id="pdfMsg" aria-live="polite" style="margin:8px 0 0"></p>
+  </fieldset>
+
+  <fieldset><legend>Database (Google Sheets)</legend>
+    <p class="hint" id="dbMsg" aria-live="polite" style="margin:6px 0 0">Kinokonekta...</p>
+    <div id="loginBox" hidden>
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password">
+      <button type="button" id="btnLogin">Mag-connect</button>
+    </div>
+    <div id="dbTools" hidden>
+      <div class="two"><button type="button" id="btnSaveDb">I-save sa database</button><button type="button" class="sm" id="btnNew">Bagong notice</button></div>
+      <label for="dbSearch">Hanapin ang naka-save</label>
+      <input id="dbSearch" placeholder="Pangalan, establishment, petsa...">
+      <div class="dbl" id="dbList"></div>
+      <div class="two"><button type="button" class="sm" id="btnRefresh">I-refresh</button><button type="button" class="sm" id="btnLogout">Mag-logout</button></div>
+    </div>
+    <button type="button" class="sm" id="btnXlsx">I-export sa Excel (.xlsx)</button>
+  </fieldset>
+</form>
+
+<div class="sheet-scroll">
+<article class="paper" aria-label="Notice of Conference preview">
+<table class="pg"><thead><tr><td>
+
+  <header class="lh">
+    <div class="ltxt">
+      <p class="hd">Republic of the Philippines</p>
+      <p class="hd"><b>DEPARTMENT OF LABOR AND EMPLOYMENT</b></p>
+      <p class="hd">Regional Office No. VII, Central Visayas</p>
+    </div>
+  </header>
+</td></tr></thead><tbody><tr><td>
+  <div class="c">
+    <p class="title" style="margin-top:22px">SINGLE-ENTRY APPROACH (SEnA)</p>
+    <p class="hd"><b>(Per Department Order No. 249, Series of 2025)</b></p>
+    <p class="title" style="text-align:left">IN THE MATTER OF REQUEST<br>FOR ASSISTANCE BETWEEN:</p>
+    <div class="lp">
+      <p class="hd"><b class="fill" data-bind="rqOut"></b></p>
+      <p class="hd"><i>Requesting Party</i></p>
+      <p class="hd" style="margin-top:16px"><b class="fill" data-bind="rsBiz"></b></p>
+      <p class="hd"><i>Responding Party</i></p>
+    </div>
+    <hr class="ul">
+    <p class="title" style="margin:1px 0 2px;line-height:1.15;font-size:15pt">NOTICE OF CONFERENCE</p>
+  </div>
+
+  <table class="parties">
+    <tr>
+      <td><span class="lb">REQUESTING PARTY:</span>
+        <div id="rqTable"></div></td>
+      <td><span class="lb">RESPONDING PARTY:</span>
+        <div><b class="fill" data-bind="rsName"></b><br>
+        <span class="fill" data-bind="rsPos"></span><br>
+        <b class="fill" data-bind="rsBiz"></b><br>
+        <span class="fill" data-bind="rsAddr"></span><br>
+        <i class="fill" data-bind="rsTel"></i></div>
+        <div id="rsTable"></div></td>
+    </tr>
+  </table>
+
+  <p class="c" style="margin:16px 0 4px"><b>G R E E T I N G S:</b></p>
+  <p class="t">In connection with the above-entitled request for assistance, you are invited to a conciliation-mediation conference before <b>ANTOINETTE O. MARQUITO, Labor and Employment Officer III,</b> this office, 4th Floor, Tri-City Field Office (TCFO), DOLE-7 Building, General Maxilom Ave. cor. Gorordo Ave., Cebu City, Cebu. Please see the details below:</p>
+
+  <table class="det">
+    <tr><td>Conference Date</td><td class="co">:</td><td><b class="fill" data-bind="date"></b></td></tr>
+    <tr><td>Time</td><td class="co">:</td><td><b class="fill" data-bind="time"></b></td></tr>
+    <tr><td>Issues</td><td class="co">:</td><td class="fill" data-bind="issue"></td></tr>
+  </table>
+
+  <p class="t">Your presence and cooperation are necessary to settle the above-mentioned issues within thirty (30) calendar days per Department Order No. 249, series of 2025.</p>
+  <p class="t">Cebu City, Philippines, <span class="fill" data-bind="nDate"></span>.</p>
+
+  <div class="sig"><b><u>ANTOINETTE O. MARQUITO</u></b><br>SEnA Desk Officer</div>
+  <div class="nb">Noted by:<b><u>MA. TERESA D. TANQUIAMCO</u></b>Officer-In-Charge, TCFO</div>
+</td></tr></tbody></table>
+</article>
+</div>
+
+</div>
+<script>
+(function(){
+  var ids=["rqOut","rsName","rsPos","rsBiz","rsAddr","rsTel","issue","date","time","nDate"];
+  function paint(id){
+    var v=document.getElementById(id).value.trim();
+    document.querySelectorAll('[data-bind="'+id+'"]').forEach(function(el){
+      el.textContent=v||"________________";
+      el.classList.toggle("ph",!v);
+    });
+  }
+  ids.forEach(function(id){
+    var el=document.getElementById(id);
+    el.addEventListener("input",function(){paint(id)});
+    paint(id);
+  });
+  var rows=[{n:"Juan Dela Cruz",a:"Barangay, City",t:"09XXXXXXXXX"}];
+  var box=document.getElementById("rqRows"),out=document.getElementById("rqTable");
+  function draw(){
+    out.textContent="";
+    var any=false;
+    rows.forEach(function(r){
+      var n=r.n.trim(),t=r.t.trim(),a=(r.a||"").trim();
+      if(!n&&!t&&!a)return;
+      any=true;
+      var p=document.createElement("p");
+      var b=document.createElement("b");b.className="fill";b.textContent=n||"________________";
+      p.appendChild(b);
+      if(a){p.appendChild(document.createElement("br"));var q=document.createElement("span");q.className="fill";q.textContent=a;p.appendChild(q);}
+      if(t){p.appendChild(document.createElement("br"));var s=document.createElement("span");s.className="fill";s.textContent=t;p.appendChild(s);}
+      out.appendChild(p);
+    });
+    if(!any){var e=document.createElement("p");e.className="ph";e.textContent="________________";out.appendChild(e);}
+  }
+  function build(){
+    box.textContent="";
+    rows.forEach(function(r,i){
+      var d=document.createElement("div");d.className="rqrow";
+      var n=document.createElement("input");n.placeholder="Pangalan";n.value=r.n;n.setAttribute("aria-label","Pangalan "+(i+1));
+      var t=document.createElement("input");t.placeholder="Numero (optional)";t.value=r.t;t.setAttribute("aria-label","Numero "+(i+1));
+      var x=document.createElement("button");x.type="button";x.textContent="\u00d7";x.setAttribute("aria-label","Alisin");
+      if(i===0){x.style.visibility="hidden";x.disabled=true;n.placeholder="Pangalan (main)";}
+      n.addEventListener("input",function(){r.n=n.value;draw()});
+      t.addEventListener("input",function(){r.t=t.value;draw()});
+      x.addEventListener("click",function(){rows.splice(i,1);build();draw()});
+      d.appendChild(n);d.appendChild(t);d.appendChild(x);
+      if(i===0){var ad=document.createElement("input");ad.placeholder="Address (main requesting party)";ad.value=r.a||"";ad.setAttribute("aria-label","Address");ad.style.gridColumn="1 / -1";ad.addEventListener("input",function(){r.a=ad.value;draw()});d.appendChild(ad);}
+      box.appendChild(d);
+    });
+  }
+  document.getElementById("rqAdd").addEventListener("click",function(){rows.push({n:"",t:""});build();draw();var i=box.querySelectorAll("input");if(i.length>1)i[i.length-2].focus();});
+  build();draw();
+  var fb=document.getElementById("fsBtn");
+  fb.addEventListener("click",function(){
+    try{
+      if(document.fullscreenElement){document.exitFullscreen();}
+      else{document.documentElement.requestFullscreen().catch(function(){fb.textContent="Hindi suportado dito"});}
+    }catch(e){fb.textContent="Hindi suportado dito";}
+  });
+  document.addEventListener("fullscreenchange",function(){fb.textContent=document.fullscreenElement?"Lumabas sa full screen":"Full screen";});
+  var resp=[];
+  var rsBox=document.getElementById("rsRows"),rsOut=document.getElementById("rsTable");
+  function rsDraw(){
+    rsOut.textContent="";
+    resp.forEach(function(r){
+      var n=r.n.trim(),p=r.p.trim(),b=r.b.trim(),t=r.t.trim();
+      if(!n&&!p&&!b&&!t)return;
+      var el=document.createElement("p");
+      function line(txt,tag,first){if(!txt)return;if(!first)el.appendChild(document.createElement("br"));var s=document.createElement(tag);s.className="fill";s.textContent=txt;el.appendChild(s)}
+      var first=true;
+      if(n||(!p&&!b&&!t)){line(n||"________________","b",true);first=false}
+      if(p){line(p,"span",first);first=false}
+      if(b){line(b,"b",first);first=false}
+      if(t){line(t,"i",first)}
+      rsOut.appendChild(el);
+    });
+  }
+  function rsBuild(){
+    rsBox.textContent="";
+    resp.forEach(function(r,i){
+      var d=document.createElement("div");d.className="rsrow";
+      [["n","Pangalan"],["p","Position (optional)"],["b","Establishment (optional)"],["t","Numero (optional)"]].forEach(function(f){
+        var inp=document.createElement("input");inp.placeholder=f[1];inp.value=r[f[0]];inp.setAttribute("aria-label",f[1]+" "+(i+1));
+        inp.addEventListener("input",function(){r[f[0]]=inp.value;rsDraw()});d.appendChild(inp);
+      });
+      var x=document.createElement("button");x.type="button";x.textContent="Alisin";
+      x.addEventListener("click",function(){resp.splice(i,1);rsBuild();rsDraw()});
+      d.appendChild(x);rsBox.appendChild(d);
+    });
+  }
+  document.getElementById("rsAdd").addEventListener("click",function(){
+    resp.push({n:"",p:"",b:"",t:""});rsBuild();rsDraw();
+    var ins=rsBox.querySelectorAll(".rsrow:last-child input");if(ins.length)ins[0].focus();
+  });
+  rsBuild();rsDraw();
+  window.NT={
+    get:function(){var o={};ids.forEach(function(id){o[id]=document.getElementById(id).value});o.rows=rows.map(function(r){return {n:r.n,a:r.a||"",t:r.t}});o.resp=resp.map(function(r){return {n:r.n,p:r.p,b:r.b,t:r.t}});return o;},
+    set:function(o){ids.forEach(function(id){document.getElementById(id).value=o[id]||"";paint(id)});rows.length=0;((o.rows&&o.rows.length)?o.rows:[{n:"",a:"",t:""}]).forEach(function(r){rows.push({n:r.n||"",a:r.a||"",t:r.t||""})});build();draw();resp.length=0;(o.resp||[]).forEach(function(r){resp.push({n:r.n||"",p:r.p||"",b:r.b||"",t:r.t||""})});rsBuild();rsDraw();}
+  };
+})();
+</script>
+
+<script>
+(function(){
+  // ====== I-PASTE DITO ANG WEB APP URL NG APPS SCRIPT (tingnan ang SETUP.md) ======
+  var API_URL="PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+  // ================================================================================
+  var $=function(id){return document.getElementById(id)};
+  var pdfMsg=$("pdfMsg"),dbMsg=$("dbMsg"),btnSave=$("btnSaveDb"),listEl=$("dbList");
+  function say(el,t){el.textContent=t}
+  function safeName(s){return String(s||"").replace(/[^\w\- ]+/g,"").trim().slice(0,40)}
+  function title(d){return (d.rqOut||"(walang pangalan)")+" vs "+(d.rsBiz||d.rsName||"(walang respondent)")}
+
+  $("btnPrint").addEventListener("click",function(){window.print()});
+
+  $("btnPdf").addEventListener("click",async function(){
+    var btn=this;
+    if(!window.html2canvas||!window.jspdf){say(pdfMsg,"Hindi na-load ang PDF tool. Gamitin ang I-print at piliin ang Save as PDF.");return}
+    btn.disabled=true;say(pdfMsg,"Ginagawa ang PDF...");
+    try{
+      var canvas=await html2canvas(document.querySelector(".paper"),{scale:2,backgroundColor:"#ffffff",scrollX:0,scrollY:-window.scrollY,useCORS:true});
+      var pdf=new window.jspdf.jsPDF({unit:"in",format:[8.5,13],orientation:"portrait",compress:true});
+      var pageH=Math.round(canvas.width*13/8.5),y=0,first=true;
+      while(y<canvas.height-3){
+        var sh=Math.min(pageH,canvas.height-y),c=document.createElement("canvas");
+        c.width=canvas.width;c.height=sh;
+        var ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,sh);
+        ctx.drawImage(canvas,0,y,canvas.width,sh,0,0,canvas.width,sh);
+        if(!first)pdf.addPage([8.5,13]);
+        pdf.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",0,0,8.5,13*sh/pageH);
+        first=false;y+=pageH;
+      }
+      pdf.save("Notice of Conference - "+(safeName(window.NT.get().rqOut)||"Notice")+".pdf");
+      say(pdfMsg,"Na-save ang PDF.");
+    }catch(e){say(pdfMsg,"Hindi nagawa ang PDF. Gamitin ang I-print at piliin ang Save as PDF.")}
+    btn.disabled=false;
+  });
+
+  // ---------- Google Sheets database ----------
+  var configured=API_URL.indexOf("PASTE_")!==0;
+  var pw="";try{pw=sessionStorage.getItem("nt_pw")||""}catch(e){}
+  var all=[],curId=null,pendingDel=null,loggedIn=false;
+  var ERR={unauthorized:"Mali ang password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",not_configured:"Wala pang APP_PASSWORD sa Apps Script.",server_error:"May error sa server.",bad_action:"May error sa server."};
+
+  async function api(action,extra){
+    var body=Object.assign({password:pw,action:action},extra||{});
+    var r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
+    return r.json();
+  }
+  function showTools(on){
+    loggedIn=on;$("dbTools").hidden=!on;$("loginBox").hidden=on||!configured;
+  }
+  async function refresh(){
+    var r=await api("list");
+    if(!r.ok)throw r;
+    all=r.records||[];render();say(dbMsg,all.length+" naka-save.");
+  }
+  async function connect(silent){
+    if(!configured){say(dbMsg,"Wala pang database. Ilagay ang Apps Script URL sa index.html (tingnan ang SETUP.md). Gumagana pa rin ang print, PDF, at Excel ng kasalukuyang form.");return}
+    try{
+      await refresh();showTools(true);
+      try{sessionStorage.setItem("nt_pw",pw)}catch(e){}
+    }catch(e){
+      showTools(false);pw="";try{sessionStorage.removeItem("nt_pw")}catch(x){}
+      say(dbMsg,(e&&e.error&&ERR[e.error])||(silent?"Ilagay ang password para mag-connect.":"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL."));
+      if(silent&&!(e&&e.error))say(dbMsg,"Ilagay ang password para mag-connect.");
+    }
+  }
+  function render(){
+    var q=($("dbSearch").value||"").toLowerCase();
+    listEl.textContent="";
+    all.filter(function(d){return !q||[d.rqOut,d.rsName,d.rsBiz,d.date,d.issue].join(" ").toLowerCase().indexOf(q)>-1}).forEach(function(d){
+      var row=document.createElement("div");row.className="rec";
+      var meta=document.createElement("div");meta.className="meta";
+      meta.appendChild(document.createTextNode(title(d)));
+      var sm=document.createElement("small");sm.textContent=[d.date,d.time].filter(Boolean).join(", ");meta.appendChild(sm);
+      var open=document.createElement("button");open.type="button";open.textContent=(d.id===curId)?"Bukas":"Buksan";
+      open.addEventListener("click",function(){window.NT.set(d);curId=d.id;pendingDel=null;say(dbMsg,"Nakabukas: "+title(d));render()});
+      var del=document.createElement("button");del.type="button";del.textContent=(pendingDel===d.id)?"Sigurado?":"Alisin";
+      del.addEventListener("click",async function(){
+        if(pendingDel!==d.id){pendingDel=d.id;render();return}
+        pendingDel=null;
+        try{var r=await api("delete",{id:d.id});if(!r.ok)throw r;if(curId===d.id)curId=null;await refresh();say(dbMsg,"Naalis ang record.")}
+        catch(e){say(dbMsg,"Hindi maalis ang record.");render()}
+      });
+      row.appendChild(meta);row.appendChild(open);row.appendChild(del);listEl.appendChild(row);
+    });
+  }
+  $("dbSearch").addEventListener("input",render);
+  $("btnLogin").addEventListener("click",function(){pw=$("pw").value;$("pw").value="";connect(false)});
+  $("pw").addEventListener("keydown",function(e){if(e.key==="Enter")$("btnLogin").click()});
+  $("btnRefresh").addEventListener("click",function(){refresh().catch(function(){say(dbMsg,"Hindi ma-refresh.")})});
+  $("btnLogout").addEventListener("click",function(){pw="";all=[];curId=null;try{sessionStorage.removeItem("nt_pw")}catch(e){}render();showTools(false);say(dbMsg,"Naka-logout. Ilagay ang password para mag-connect.")});
+
+  btnSave.addEventListener("click",async function(){
+    btnSave.disabled=true;
+    try{
+      var rec=window.NT.get();
+      rec.id=curId||(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2,10));
+      rec.updatedAt=Date.now();
+      var r=await api("save",{record:rec});if(!r.ok)throw r;
+      curId=rec.id;await refresh();say(dbMsg,"Na-save sa database.");
+    }catch(e){say(dbMsg,(e&&e.error&&ERR[e.error])||"Hindi ma-save. Subukan ulit.")}
+    btnSave.disabled=false;
+  });
+  $("btnNew").addEventListener("click",function(){
+    curId=null;pendingDel=null;
+    window.NT.set({rows:[{n:"",a:"",t:""}],nDate:window.NT.get().nDate});
+    say(dbMsg,"Bagong notice. I-save para madagdag sa database.");render();
+  });
+
+  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice"];
+  function rowOf(d,when){
+    var rq=(d.rows||[]).map(function(r){return [r.n,r.a,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
+    var ex=(d.resp||[]).map(function(r){return [r.n,r.p,r.b,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
+    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||""];
+  }
+  $("btnXlsx").addEventListener("click",function(){
+    if(!window.XLSX){say(pdfMsg,"Hindi na-load ang Excel tool.");return}
+    var data=[cols];
+    if(loggedIn&&all.length){all.slice().reverse().forEach(function(d){data.push(rowOf(d,d.updatedAt?new Date(d.updatedAt).toLocaleString():""))})}
+    else{data.push(rowOf(window.NT.get(),new Date().toLocaleString()))}
+    var ws=XLSX.utils.aoa_to_sheet(data);
+    ws["!cols"]=cols.map(function(c,i){return {wch:i===2||i===8||i===9?38:22}});
+    var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Notices");
+    XLSX.writeFile(wb,"Notices of Conference.xlsx");
+  });
+
+  showTools(false);
+  if(!configured){connect(false)}
+  else if(pw){connect(true)}
+  else{say(dbMsg,"Ilagay ang password para mag-connect.")}
+})();
+</script>
+</body>
+</html>
