@@ -6,13 +6,29 @@
 <title>Notice of Conference</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#e9ece8;--panel:#fff;--ink:#1d2421;--muted:#5d6a64;--line:#c9d1cc;--accent:#1f5c4a;--paper:#fff;--paper-ink:#111}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5}}
-:root[data-theme="dark"]{--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5}
+--bg:#e9ece8;--panel:#fff;--ink:#1d2421;--muted:#5d6a64;--line:#c9d1cc;--accent:#1f5c4a;--paper:#fff;--paper-ink:#111;--on:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5;--on:#0b1410}}
+:root[data-theme="dark"]{--bg:#161b19;--panel:#202724;--ink:#e6ece8;--muted:#9aa8a1;--line:#38433e;--accent:#6fc2a5;--on:#0b1410}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*:before,*:after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{display:grid;grid-template-columns:360px minmax(0,1fr);gap:24px;width:100%;max-width:none;min-height:100vh;margin:0;padding:20px}
+.wrap{display:grid;grid-template-columns:360px minmax(0,1fr) 320px;gap:24px;width:100%;max-width:none;min-height:100vh;margin:0;padding:20px}
+.cal{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;align-self:start;position:sticky;top:12px;max-height:calc(100vh - 40px);overflow-y:auto}
+.calhd{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.calhd button{margin:0;width:auto;padding:4px 12px;background:transparent;color:var(--accent);border:1px solid var(--line)}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-top:10px;text-align:center}
+.calgrid .dow{font-size:11px;color:var(--muted);padding:2px 0}
+.calgrid button.day{margin:0;width:auto;min-height:38px;padding:4px 0;background:transparent;color:var(--ink);border:1px solid transparent;border-radius:6px;font-size:13px;font-weight:400}
+.day.today{border-color:var(--muted)!important}
+.day.has{font-weight:700;border-color:var(--accent)!important}
+.day.sel{background:var(--accent)!important;color:var(--on)!important}
+.day .n{display:block;font-size:10px;line-height:1}
+.evt{border:1px solid var(--line);border-radius:6px;padding:8px;margin-top:8px;font-size:13px;overflow-wrap:anywhere}
+.evt small{display:block;color:var(--muted)}
+.evt button{margin:6px 0 0;width:auto;padding:4px 10px;font-size:12px;background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.dtrow{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:6px}
+.dtrow button{margin:0;width:auto;padding:5px 10px;background:transparent;color:var(--muted);border:1px solid var(--line)}
+@media(max-width:1600px){.wrap{grid-template-columns:360px minmax(0,1fr)}.cal{grid-column:1/-1;position:static;max-height:none}}
 @media(max-width:860px){.wrap{grid-template-columns:1fr}}
 .editor{max-height:calc(100vh - 40px);overflow-y:auto}
 .fs{margin:0 0 12px!important;background:transparent!important;color:var(--accent)!important;border:1px solid var(--accent)!important}
@@ -81,7 +97,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 .nb b{display:block;margin-top:28px}
 @page{size:8.5in 13in;margin:0 1in 1in}
 @media print{
- body{background:#fff}.wrap{display:block;padding:0;max-width:none}.editor{display:none}
+ body{background:#fff}.wrap{display:block;padding:0;max-width:none}.editor,.cal{display:none}
  .sheet-scroll{overflow:visible}
  html,body{margin:0;padding:0}
  .paper{width:100%;box-sizing:border-box}.paper{box-shadow:none;min-width:0;max-width:none;min-height:0;padding:0}
@@ -126,8 +142,11 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   </fieldset>
 
   <fieldset><legend>Conference</legend>
-    <label for="date">Petsa (puwedeng higit isa)</label><input id="date" value="April 13 and 20, 2026">
-    <label for="time">Oras</label><input id="time" value="3:00 P.M">
+    <label>Petsa (puwedeng higit isa)</label>
+    <div id="dtRows"></div>
+    <button type="button" class="sm" id="dtAdd">+ Dagdag na petsa</button>
+    <label for="timeIn">Oras</label><input id="timeIn" type="time" value="15:00">
+    <input id="date" type="hidden"><input id="time" type="hidden">
   </fieldset>
 
   <fieldset><legend>Petsa ng Notice</legend>
@@ -139,23 +158,19 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     <p class="hint" id="pdfMsg" aria-live="polite" style="margin:8px 0 0"></p>
   </fieldset>
 
-  <fieldset><legend>Account at database</legend>
+  <fieldset><legend>Database (Google Sheets)</legend>
     <p class="hint" id="dbMsg" aria-live="polite" style="margin:6px 0 0">Kinokonekta...</p>
     <div id="authBox" hidden>
-      <label for="auUser">Username</label>
-      <input id="auUser" autocomplete="username" autocapitalize="none">
       <label for="auPass">Password</label>
       <input id="auPass" type="password" autocomplete="current-password">
-      <div id="auCodeWrap" hidden><label for="auCode">Registration code (hingin sa admin)</label><input id="auCode" autocomplete="off"></div>
-      <button type="button" id="btnAuth">Mag-login</button>
-      <button type="button" class="sm" id="btnMode">Wala pang account? Mag-sign up</button>
+      <button type="button" id="btnAuth">Mag-connect</button>
     </div>
     <div id="dbTools" hidden>
       <div class="two"><button type="button" id="btnSaveDb">I-save sa database</button><button type="button" class="sm" id="btnNew">Bagong notice</button></div>
       <label for="dbSearch">Hanapin ang naka-save</label>
       <input id="dbSearch" placeholder="Pangalan, establishment, petsa...">
       <div class="dbl" id="dbList"></div>
-      <div class="two"><button type="button" class="sm" id="btnRefresh">I-refresh</button><button type="button" class="sm" id="btnLogout">Mag-logout</button></div>
+      <button type="button" class="sm" id="btnRefresh">I-refresh</button>
     </div>
     <button type="button" class="sm" id="btnXlsx">I-export sa Excel (.xlsx)</button>
   </fieldset>
@@ -218,6 +233,13 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 </td></tr></tbody></table>
 </article>
 </div>
+
+<aside class="cal" aria-label="Calendar ng SEnA">
+  <div class="calhd"><button type="button" id="calPrev" aria-label="Nakaraang buwan">&lsaquo;</button><strong id="calTitle"></strong><button type="button" id="calNext" aria-label="Susunod na buwan">&rsaquo;</button></div>
+  <div class="calgrid" id="calGrid"></div>
+  <p class="hint" id="calHint" style="margin:10px 0 0"></p>
+  <div id="calList"></div>
+</aside>
 
 </div>
 <script>
@@ -314,9 +336,32 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     var ins=rsBox.querySelectorAll(".rsrow:last-child input");if(ins.length)ins[0].focus();
   });
   rsBuild();rsDraw();
-  window.NT={
-    get:function(){var o={};ids.forEach(function(id){o[id]=document.getElementById(id).value});o.rows=rows.map(function(r){return {n:r.n,a:r.a||"",t:r.t}});o.resp=resp.map(function(r){return {n:r.n,p:r.p,b:r.b,t:r.t}});return o;},
-    set:function(o){ids.forEach(function(id){document.getElementById(id).value=o[id]||"";paint(id)});rows.length=0;((o.rows&&o.rows.length)?o.rows:[{n:"",a:"",t:""}]).forEach(function(r){rows.push({n:r.n||"",a:r.a||"",t:r.t||""})});build();draw();resp.length=0;(o.resp||[]).forEach(function(r){resp.push({n:r.n||"",p:r.p||"",b:r.b||"",t:r.t||""})});rsBuild();rsDraw();}
+  var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var dates=["2026-04-13","2026-04-20"],dtBox=document.getElementById("dtRows"),timeIn=document.getElementById("timeIn");
+  function fmtTime(v){var m=/^(\d{1,2}):(\d{2})/.exec(v||"");if(!m)return "";var h=+m[1];return ((h%12)||12)+":"+m[2]+" "+(h>=12?"P.M":"A.M")}
+  function fmtDates(list){
+    var ok=Array.from(new Set(list.filter(function(x){return /^\d{4}-\d{2}-\d{2}$/.test(x)}))).sort(),groups=[];
+    ok.forEach(function(x){var y=+x.slice(0,4),m=+x.slice(5,7)-1,d=+x.slice(8,10),g=groups[groups.length-1];if(g&&g.y===y&&g.m===m)g.d.push(d);else groups.push({y:y,m:m,d:[d]})});
+    var parts=groups.map(function(g){var ds=g.d.length>1?g.d.slice(0,-1).join(", ")+" and "+g.d[g.d.length-1]:String(g.d[0]);return MONTHS[g.m]+" "+ds+", "+g.y});
+    return parts.length>1?parts.slice(0,-1).join(", ")+" and "+parts[parts.length-1]:(parts[0]||"");
+  }
+  function syncDT(){document.getElementById("date").value=fmtDates(dates);document.getElementById("time").value=fmtTime(timeIn.value);paint("date");paint("time")}
+  function dtBuild(){
+    dtBox.textContent="";
+    dates.forEach(function(v,i){
+      var d=document.createElement("div");d.className="dtrow";
+      var inp=document.createElement("input");inp.type="date";inp.value=v;inp.setAttribute("aria-label","Petsa "+(i+1));
+      inp.addEventListener("input",function(){dates[i]=inp.value;syncDT()});d.appendChild(inp);
+      if(dates.length>1){var x=document.createElement("button");x.type="button";x.textContent="\u00d7";x.setAttribute("aria-label","Alisin ang petsa");x.addEventListener("click",function(){dates.splice(i,1);dtBuild();syncDT()});d.appendChild(x)}
+      dtBox.appendChild(d);
+    });
+  }
+  document.getElementById("dtAdd").addEventListener("click",function(){dates.push("");dtBuild();var ins=dtBox.querySelectorAll("input");ins[ins.length-1].focus()});
+  timeIn.addEventListener("input",syncDT);
+  dtBuild();syncDT();
+  window.NT={fmtTime:fmtTime,
+    get:function(){var o={};ids.forEach(function(id){o[id]=document.getElementById(id).value});o.rows=rows.map(function(r){return {n:r.n,a:r.a||"",t:r.t}});o.resp=resp.map(function(r){return {n:r.n,p:r.p,b:r.b,t:r.t}});o.dates=dates.filter(Boolean);o.timeVal=timeIn.value;return o;},
+    set:function(o){ids.forEach(function(id){document.getElementById(id).value=o[id]||"";paint(id)});rows.length=0;((o.rows&&o.rows.length)?o.rows:[{n:"",a:"",t:""}]).forEach(function(r){rows.push({n:r.n||"",a:r.a||"",t:r.t||""})});build();draw();resp.length=0;(o.resp||[]).forEach(function(r){resp.push({n:r.n||"",p:r.p||"",b:r.b||"",t:r.t||""})});rsBuild();rsDraw();var legacy=(o.date&&!(o.dates&&o.dates.length));dates.length=0;((o.dates&&o.dates.length)?o.dates:[""]).forEach(function(x){dates.push(x)});timeIn.value=o.timeVal||"";dtBuild();if(!legacy)syncDT();}
   };
 })();
 </script>
@@ -324,7 +369,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 <script>
 (function(){
   // ====== I-PASTE DITO ANG WEB APP URL NG APPS SCRIPT (tingnan ang SETUP.md) ======
-  var API_URL="https://script.google.com/macros/s/AKfycbxB6bdvlzzY9g5oUw_0O5qHlHOfyJCP-5Ex9DgdIsmCVdYmwoc31GU_L9QZ7fgzZng4/exec";
+  var API_URL="https://script.google.com/macros/s/AKfycbwUVtHViqAUUQND293x-ju2vzrU5mueHHgaohvC1cw6gL_EcSiJ3UBwdo3XX88ZBfva/exec";
   // ================================================================================
   var $=function(id){return document.getElementById(id)};
   var pdfMsg=$("pdfMsg"),dbMsg=$("dbMsg"),btnSave=$("btnSaveDb"),listEl=$("dbList");
@@ -359,48 +404,30 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 
   // ---------- Google Sheets database ----------
   var configured=API_URL.indexOf("PASTE_")!==0;
-  var token="",who="";try{token=sessionStorage.getItem("nt_tok")||"";who=sessionStorage.getItem("nt_who")||""}catch(e){}
-  var all=[],curId=null,pendingDel=null,loggedIn=false,mode="login";
-  var ERR={bad_login:"Mali ang username o password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",pending:"Hinihintay pa ang approval ng admin.",disabled:"Naka-disable ang account na ito.",session:"Nag-expire ang login. Mag-login ulit.",not_configured:"Hindi pa kumpleto ang setup ng Apps Script.",bad_username:"Username: 3 hanggang 30 letra, numero, . _ -",weak_password:"Password: hindi bababa sa 8 characters.",bad_code:"Mali ang registration code.",exists:"May gumagamit na ng username na iyon.",server_error:"May error sa server.",bad_action:"May error sa server."};
-
+  var pw="";try{pw=sessionStorage.getItem("nt_pw")||""}catch(e){}
+  var all=[],curId=null,pendingDel=null,loggedIn=false;
+  var ERR={unauthorized:"Mali ang password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",not_configured:"Wala pang APP_PASSWORD sa Apps Script.",server_error:"May error sa server.",bad_action:"May error sa server."};
   async function api(action,extra){
-    var body=Object.assign({token:token,action:action},extra||{});
+    var body=Object.assign({password:pw,action:action},extra||{});
     var r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
     return r.json();
   }
-  function setSession(t,u){token=t;who=u;try{sessionStorage.setItem("nt_tok",t);sessionStorage.setItem("nt_who",u)}catch(e){}}
-  function clearSession(){token="";who="";try{sessionStorage.removeItem("nt_tok");sessionStorage.removeItem("nt_who")}catch(e){}}
   function showTools(on){loggedIn=on;$("dbTools").hidden=!on;$("authBox").hidden=on||!configured}
-  function setMode(m){
-    mode=m;$("auCodeWrap").hidden=(m!=="signup");
-    $("btnAuth").textContent=m==="signup"?"Gumawa ng account":"Mag-login";
-    $("btnMode").textContent=m==="signup"?"May account na? Mag-login":"Wala pang account? Mag-sign up";
-    $("auPass").setAttribute("autocomplete",m==="signup"?"new-password":"current-password");
-  }
   async function refresh(){
     var r=await api("list");
     if(!r.ok)throw r;
-    all=r.records||[];render();say(dbMsg,"Naka-login: "+who+" ("+all.length+" naka-save).");
+    all=r.records||[];render();say(dbMsg,all.length+" naka-save.");
   }
-  async function connect(){
+  async function connect(manual){
     if(!configured){say(dbMsg,"Wala pang database. Ilagay ang Apps Script URL sa index.html (tingnan ang SETUP.md). Gumagana pa rin ang print, PDF, at Excel ng kasalukuyang form.");return}
-    try{await refresh();showTools(true)}
-    catch(e){clearSession();showTools(false);say(dbMsg,(e&&e.error==="session")?ERR.session:"Mag-login para mag-connect.")}
+    try{await refresh();showTools(true);renderCal();try{sessionStorage.setItem("nt_pw",pw)}catch(e){}}
+    catch(e){
+      showTools(false);pw="";try{sessionStorage.removeItem("nt_pw")}catch(x){}
+      say(dbMsg,(e&&e.error&&ERR[e.error])||(manual?"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL.":"Ilagay ang password para mag-connect."));
+    }
   }
-  async function submitAuth(){
-    var u=$("auUser").value.trim(),p=$("auPass").value,btn=$("btnAuth");
-    if(!u||!p){say(dbMsg,"Ilagay ang username at password.");return}
-    btn.disabled=true;
-    try{
-      var r=await api(mode==="signup"?"signup":"login",{username:u,password:p,code:$("auCode").value});
-      if(!r.ok){say(dbMsg,ERR[r.error]||"Hindi nagawa.");btn.disabled=false;return}
-      $("auPass").value="";$("auCode").value="";
-      if(r.pending){say(dbMsg,"Nagawa ang account. Hintayin ang approval ng admin bago mag-login.");setMode("login");btn.disabled=false;return}
-      setSession(r.token,r.username);await refresh();showTools(true);
-    }catch(e){say(dbMsg,(e&&e.error&&ERR[e.error])||"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL.")}
-    btn.disabled=false;
-  }
-  function render(){
+  function render(){renderList();renderCal()}
+  function renderList(){
     var q=($("dbSearch").value||"").toLowerCase();
     listEl.textContent="";
     all.filter(function(d){return !q||[d.rqOut,d.rsName,d.rsBiz,d.date,d.issue].join(" ").toLowerCase().indexOf(q)>-1}).forEach(function(d){
@@ -421,14 +448,10 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     });
   }
   $("dbSearch").addEventListener("input",render);
-  $("btnAuth").addEventListener("click",submitAuth);
-  $("btnMode").addEventListener("click",function(){setMode(mode==="login"?"signup":"login")});
-  $("auPass").addEventListener("keydown",function(e){if(e.key==="Enter")submitAuth()});
+  $("btnAuth").addEventListener("click",function(){pw=$("auPass").value;$("auPass").value="";connect(true)});
+  $("auPass").addEventListener("keydown",function(e){if(e.key==="Enter")$("btnAuth").click()});
   $("btnRefresh").addEventListener("click",function(){refresh().catch(function(){say(dbMsg,"Hindi ma-refresh.")})});
-  $("btnLogout").addEventListener("click",async function(){
-    try{await api("logout")}catch(e){}
-    clearSession();all=[];curId=null;render();showTools(false);say(dbMsg,"Naka-logout. Mag-login para mag-connect.");
-  });
+  
 
   btnSave.addEventListener("click",async function(){
     btnSave.disabled=true;
@@ -447,11 +470,11 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     say(dbMsg,"Bagong notice. I-save para madagdag sa database.");render();
   });
 
-  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice","Na-save ni"];
+  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice"];
   function rowOf(d,when){
     var rq=(d.rows||[]).map(function(r){return [r.n,r.a,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
     var ex=(d.resp||[]).map(function(r){return [r.n,r.p,r.b,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
-    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||"",d.savedBy||""];
+    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||""];
   }
   $("btnXlsx").addEventListener("click",function(){
     if(!window.XLSX){say(pdfMsg,"Hindi na-load ang Excel tool.");return}
@@ -464,10 +487,48 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     XLSX.writeFile(wb,"Notices of Conference.xlsx");
   });
 
-  showTools(false);setMode("login");
+  var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var now=new Date(),calY=now.getFullYear(),calM=now.getMonth(),selD="";
+  function iso(y,m,d){return y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0")}
+  function renderCal(){
+    var map={},grid=$("calGrid"),list=$("calList"),hint=$("calHint");
+    all.forEach(function(d){(d.dates||[]).forEach(function(x){(map[x]=map[x]||[]).push(d)})});
+    $("calTitle").textContent=MON[calM]+" "+calY;
+    grid.textContent="";list.textContent="";
+    ["Su","Mo","Tu","We","Th","Fr","Sa"].forEach(function(n){var s=document.createElement("div");s.className="dow";s.textContent=n;grid.appendChild(s)});
+    var first=new Date(calY,calM,1).getDay(),days=new Date(calY,calM+1,0).getDate(),t=new Date(),today=iso(t.getFullYear(),t.getMonth(),t.getDate());
+    for(var i=0;i<first;i++)grid.appendChild(document.createElement("div"));
+    for(var d=1;d<=days;d++){(function(d){
+      var key=iso(calY,calM,d),n=(map[key]||[]).length,b=document.createElement("button");
+      b.type="button";b.className="day"+(n?" has":"")+(key===selD?" sel":"")+(key===today?" today":"");
+      b.textContent=String(d);
+      if(n){var s=document.createElement("span");s.className="n";s.textContent=String(n);b.appendChild(s)}
+      b.setAttribute("aria-label",MON[calM]+" "+d+", "+calY+(n?": "+n+" naka-schedule":""));
+      b.addEventListener("click",function(){selD=key;renderCal()});
+      grid.appendChild(b);
+    })(d)}
+    if(!loggedIn){hint.textContent="Mag-connect sa database para makita ang mga naka-schedule.";return}
+    if(!selD){hint.textContent="Pumili ng petsa para makita ang mga SEnA na naka-schedule. Ang may bilog ay may schedule.";return}
+    var evs=(map[selD]||[]).slice().sort(function(a,b){return (a.timeVal||"99").localeCompare(b.timeVal||"99")});
+    var p=selD.split("-");
+    hint.textContent=MON[+p[1]-1]+" "+(+p[2])+", "+p[0]+": "+(evs.length?evs.length+" naka-schedule":"walang naka-schedule");
+    evs.forEach(function(d){
+      var e=document.createElement("div");e.className="evt";
+      var b=document.createElement("b");b.textContent=window.NT.fmtTime(d.timeVal)||"Walang oras";e.appendChild(b);
+      e.appendChild(document.createTextNode(" "+title(d)));
+      if(d.issue){var s=document.createElement("small");s.textContent=d.issue;e.appendChild(s)}
+      var o=document.createElement("button");o.type="button";o.textContent="Buksan";
+      o.addEventListener("click",function(){window.NT.set(d);curId=d.id;pendingDel=null;say(dbMsg,"Nakabukas: "+title(d));render()});
+      e.appendChild(o);list.appendChild(e);
+    });
+  }
+  $("calPrev").addEventListener("click",function(){calM--;if(calM<0){calM=11;calY--}renderCal()});
+  $("calNext").addEventListener("click",function(){calM++;if(calM>11){calM=0;calY++}renderCal()});
+
+  showTools(false);renderCal();
   if(!configured){connect()}
-  else if(token){connect()}
-  else{say(dbMsg,"Mag-login o mag-sign up para ma-access ang database.")}
+  else if(pw){connect()}
+  else{say(dbMsg,"Ilagay ang password para mag-connect.")}
 })();
 </script>
 </body>
