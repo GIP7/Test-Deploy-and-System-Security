@@ -85,6 +85,8 @@ button:disabled{opacity:.5;cursor:default}
 .parties{width:100%;border-collapse:collapse;margin:0 0 10px}
 .parties td{border:1px solid #111;padding:10px 12px;vertical-align:top;width:50%}
 .parties .lb{font-weight:700;margin-bottom:6px;display:block}
+.up{text-transform:uppercase}
+.warn{color:var(--ink);background:rgba(220,60,50,.12);border:1px solid rgba(220,60,50,.6);border-radius:6px;padding:8px;font-size:13px;margin:8px 0 0}
 .fill{white-space:pre-line;overflow-wrap:anywhere}
 .ph{color:#9a9a9a}
 .det{border-collapse:collapse;width:100%;margin:12px 0}
@@ -98,6 +100,8 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 @page{size:8.5in 13in;margin:0 1in 1in}
 @media print{
  body{background:#fff}.wrap{display:block;padding:0;max-width:none}.editor,.cal{display:none}
+ body.blocked .paper{display:none}
+ body.blocked:before{content:"Hindi puwedeng i-print: may conflict, nakaraan na ang petsa, o kulang ang datos.";font:16px sans-serif}
  .sheet-scroll{overflow:visible}
  html,body{margin:0;padding:0}
  .paper{width:100%;box-sizing:border-box}.paper{box-shadow:none;min-width:0;max-width:none;min-height:0;padding:0}
@@ -141,6 +145,10 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     <label for="issue">Issues</label><textarea id="issue" rows="2">Others: Refund Emergency Cash Bond</textarea>
   </fieldset>
 
+  <fieldset><legend>SEnA Desk Officer</legend>
+    <label for="officer">Pangalan</label><input id="officer" value="ANTOINETTE O. MARQUITO">
+  </fieldset>
+
   <fieldset><legend>Conference</legend>
     <label>Petsa (puwedeng higit isa)</label>
     <div id="dtRows"></div>
@@ -155,6 +163,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 
   <fieldset><legend>I-print o i-save</legend>
     <div class="two"><button type="button" id="btnPrint">I-print</button><button type="button" id="btnPdf">I-save bilang PDF</button></div>
+    <p class="warn" id="cfMsg" role="alert" hidden></p>
     <p class="hint" id="pdfMsg" aria-live="polite" style="margin:8px 0 0"></p>
   </fieldset>
 
@@ -217,7 +226,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   </table>
 
   <p class="c" style="margin:16px 0 4px"><b>G R E E T I N G S:</b></p>
-  <p class="t">In connection with the above-entitled request for assistance, you are invited to a conciliation-mediation conference before <b>ANTOINETTE O. MARQUITO, Labor and Employment Officer III,</b> this office, 4th Floor, Tri-City Field Office (TCFO), DOLE-7 Building, General Maxilom Ave. cor. Gorordo Ave., Cebu City, Cebu. Please see the details below:</p>
+  <p class="t">In connection with the above-entitled request for assistance, you are invited to a conciliation-mediation conference before <b><span class="up" data-bind="officer"></span>, Labor and Employment Officer III,</b> this office, 4th Floor, Tri-City Field Office (TCFO), DOLE-7 Building, General Maxilom Ave. cor. Gorordo Ave., Cebu City, Cebu. Please see the details below:</p>
 
   <table class="det">
     <tr><td>Conference Date</td><td class="co">:</td><td><b class="fill" data-bind="date"></b></td></tr>
@@ -228,7 +237,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   <p class="t">Your presence and cooperation are necessary to settle the above-mentioned issues within thirty (30) calendar days per Department Order No. 249, series of 2025.</p>
   <p class="t">Cebu City, Philippines, <span class="fill" data-bind="nDate"></span>.</p>
 
-  <div class="sig"><b><u>ANTOINETTE O. MARQUITO</u></b><br>SEnA Desk Officer</div>
+  <div class="sig"><b><u class="up" data-bind="officer"></u></b><br>SEnA Desk Officer</div>
   <div class="nb">Noted by:<b><u>MA. TERESA D. TANQUIAMCO</u></b>Officer-In-Charge, TCFO</div>
 </td></tr></tbody></table>
 </article>
@@ -244,7 +253,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 </div>
 <script>
 (function(){
-  var ids=["rqOut","rsName","rsPos","rsBiz","rsAddr","rsTel","issue","date","time","nDate"];
+  var ids=["rqOut","rsName","rsPos","rsBiz","rsAddr","rsTel","issue","date","time","nDate","officer"];
   function paint(id){
     var v=document.getElementById(id).value.trim();
     document.querySelectorAll('[data-bind="'+id+'"]').forEach(function(el){
@@ -369,7 +378,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
 <script>
 (function(){
   // ====== I-PASTE DITO ANG WEB APP URL NG APPS SCRIPT (tingnan ang SETUP.md) ======
-  var API_URL="https://script.google.com/macros/s/AKfycbwUVtHViqAUUQND293x-ju2vzrU5mueHHgaohvC1cw6gL_EcSiJ3UBwdo3XX88ZBfva/exec";
+  var API_URL="https://script.google.com/macros/s/AKfycbxBzL3aUXMSV6OxsWMnux8fRzQfA2JOygtYIhaTU-nInL8XsBBCRCCuet8Ne32Hf1eQ7w/exec";
   // ================================================================================
   var $=function(id){return document.getElementById(id)};
   var pdfMsg=$("pdfMsg"),dbMsg=$("dbMsg"),btnSave=$("btnSaveDb"),listEl=$("dbList");
@@ -377,10 +386,11 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   function safeName(s){return String(s||"").replace(/[^\w\- ]+/g,"").trim().slice(0,40)}
   function title(d){return (d.rqOut||"(walang pangalan)")+" vs "+(d.rsBiz||d.rsName||"(walang respondent)")}
 
-  $("btnPrint").addEventListener("click",function(){window.print()});
+  $("btnPrint").addEventListener("click",async function(){if(await guard(pdfMsg))window.print()});
 
   $("btnPdf").addEventListener("click",async function(){
     var btn=this;
+    if(!(await guard(pdfMsg)))return;
     if(!window.html2canvas||!window.jspdf){say(pdfMsg,"Hindi na-load ang PDF tool. Gamitin ang I-print at piliin ang Save as PDF.");return}
     btn.disabled=true;say(pdfMsg,"Ginagawa ang PDF...");
     try{
@@ -406,7 +416,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   var configured=API_URL.indexOf("PASTE_")!==0;
   var pw="";try{pw=sessionStorage.getItem("nt_pw")||""}catch(e){}
   var all=[],curId=null,pendingDel=null,loggedIn=false;
-  var ERR={unauthorized:"Mali ang password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",not_configured:"Wala pang APP_PASSWORD sa Apps Script.",server_error:"May error sa server.",bad_action:"May error sa server."};
+  var ERR={unauthorized:"Mali ang password.",locked:"Masyadong maraming maling subok. Maghintay ng 10 minuto.",not_configured:"Wala pang APP_PASSWORD sa Apps Script.",past:"Nakaraan na ang petsa at oras.",conflict:"May conflict sa schedule ng SEnA desk officer na ito.",no_date:"Pumili ng petsa.",no_officer:"Ilagay ang SEnA Desk Officer.",bad_record:"May mali sa datos.",server_error:"May error sa server.",bad_action:"May error sa server."};
   async function api(action,extra){
     var body=Object.assign({password:pw,action:action},extra||{});
     var r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body)});
@@ -426,7 +436,39 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
       say(dbMsg,(e&&e.error&&ERR[e.error])||(manual?"Hindi maabot ang database. Tingnan ang internet at ang Apps Script URL.":"Ilagay ang password para mag-connect."));
     }
   }
-  function render(){renderList();renderCal()}
+  function fmtD(x){var p=x.split("-");return MON[+p[1]-1]+" "+(+p[2])+", "+p[0]}
+  function normO(v){return String(v||"").toUpperCase().replace(/\s+/g," ").trim()}
+  function problems(rec,list){
+    var out=[],ds=(rec.dates||[]).filter(Boolean),t=rec.timeVal||"",n=new Date();
+    var nk=iso(n.getFullYear(),n.getMonth(),n.getDate())+" "+String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0");
+    if(!normO(rec.officer))out.push("Ilagay ang SEnA Desk Officer.");
+    if(!ds.length)out.push("Pumili ng petsa ng conference.");
+    ds.forEach(function(d){if(d+" "+(t||"23:59")<nk)out.push("Nakaraan na: "+fmtD(d)+(t?" "+window.NT.fmtTime(t):"")+".")});
+    list.forEach(function(r){
+      if(r.id===curId||normO(r.officer)!==normO(rec.officer)||(r.timeVal||"")!==t)return;
+      (r.dates||[]).forEach(function(d){if(ds.indexOf(d)>-1)out.push("Conflict: "+fmtD(d)+(t?" "+window.NT.fmtTime(t):"")+" ay may SEnA na si "+(r.officer||"")+" ("+title(r)+").")});
+    });
+    return out;
+  }
+  function liveCheck(){
+    var p=problems(window.NT.get(),all),box=$("cfMsg");
+    if(configured&&!loggedIn)p.push("Mag-connect sa database para ma-check ang conflict.");
+    box.textContent=p.join(" ");box.hidden=!p.length;
+    $("btnPrint").disabled=!!p.length;$("btnPdf").disabled=!!p.length;
+    if(loggedIn)btnSave.disabled=!!p.length;
+    document.body.classList.toggle("blocked",p.length>0);
+    return p;
+  }
+  async function guard(msgEl){
+    if(configured){
+      if(!loggedIn){liveCheck();return false}
+      try{await refresh()}catch(e){say(msgEl,"Hindi ma-check ang conflict: hindi maabot ang database.");return false}
+    }
+    var p=liveCheck();
+    if(p.length){say(msgEl,"Hindi puwede: "+p[0]);return false}
+    return true;
+  }
+  function render(){renderList();renderCal();liveCheck()}
   function renderList(){
     var q=($("dbSearch").value||"").toLowerCase();
     listEl.textContent="";
@@ -454,6 +496,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   
 
   btnSave.addEventListener("click",async function(){
+    if(!(await guard(dbMsg)))return;
     btnSave.disabled=true;
     try{
       var rec=window.NT.get();
@@ -461,8 +504,8 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
       rec.updatedAt=Date.now();
       var r=await api("save",{record:rec});if(!r.ok)throw r;
       curId=rec.id;await refresh();say(dbMsg,"Na-save sa database.");
-    }catch(e){say(dbMsg,(e&&e.error&&ERR[e.error])||"Hindi ma-save. Subukan ulit.")}
-    btnSave.disabled=false;
+    }catch(e){say(dbMsg,((e&&e.error&&ERR[e.error])||"Hindi ma-save. Subukan ulit.")+(e&&e.detail?" ("+e.detail+")":""))}
+    liveCheck();
   });
   $("btnNew").addEventListener("click",function(){
     curId=null;pendingDel=null;
@@ -470,11 +513,11 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     say(dbMsg,"Bagong notice. I-save para madagdag sa database.");render();
   });
 
-  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice"];
+  var cols=["Na-save noong","Requesting Party (itaas)","Requesting Parties (table)","Responding Party","Position","Establishment","Address","Contact no.","Karagdagang Responding Parties","Issues","Conference Date","Time","Petsa ng Notice","SEnA Desk Officer"];
   function rowOf(d,when){
     var rq=(d.rows||[]).map(function(r){return [r.n,r.a,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
     var ex=(d.resp||[]).map(function(r){return [r.n,r.p,r.b,r.t].filter(Boolean).join(" - ")}).filter(Boolean).join("\n");
-    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||""];
+    return [when,d.rqOut||"",rq,d.rsName||"",d.rsPos||"",d.rsBiz||"",d.rsAddr||"",d.rsTel||"",ex,d.issue||"",d.date||"",d.time||"",d.nDate||"",d.officer||""];
   }
   $("btnXlsx").addEventListener("click",function(){
     if(!window.XLSX){say(pdfMsg,"Hindi na-load ang Excel tool.");return}
@@ -525,7 +568,9 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   $("calPrev").addEventListener("click",function(){calM--;if(calM<0){calM=11;calY--}renderCal()});
   $("calNext").addEventListener("click",function(){calM++;if(calM>11){calM=0;calY++}renderCal()});
 
-  showTools(false);renderCal();
+  $("form").addEventListener("input",liveCheck);$("form").addEventListener("click",function(){setTimeout(liveCheck,0)});
+  setInterval(liveCheck,60000);
+  showTools(false);renderCal();liveCheck();
   if(!configured){connect()}
   else if(pw){connect()}
   else{say(dbMsg,"Ilagay ang password para mag-connect.")}
