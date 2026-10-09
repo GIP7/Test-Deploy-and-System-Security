@@ -175,7 +175,9 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
       <button type="button" id="btnAuth">Mag-connect</button>
     </div>
     <div id="dbTools" hidden>
+      <p class="hint" id="editInfo" style="margin:8px 0 0"></p>
       <div class="two"><button type="button" id="btnSaveDb">I-save sa database</button><button type="button" class="sm" id="btnNew">Bagong notice</button></div>
+      <button type="button" class="sm" id="btnSaveNew" hidden>I-save bilang bago (huwag palitan ang bukas)</button>
       <label for="dbSearch">Hanapin ang naka-save</label>
       <input id="dbSearch" placeholder="Pangalan, establishment, petsa...">
       <div class="dbl" id="dbList"></div>
@@ -468,7 +470,7 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
     if(p.length){say(msgEl,"Hindi puwede: "+p[0]);return false}
     return true;
   }
-  function render(){renderList();renderCal();liveCheck()}
+  function render(){renderList();renderCal();liveCheck();updateMode()}
   function renderList(){
     var q=($("dbSearch").value||"").toLowerCase();
     listEl.textContent="";
@@ -495,21 +497,36 @@ p.t{text-indent:36px;text-align:justify;margin:10px 0}
   $("btnRefresh").addEventListener("click",function(){refresh().catch(function(){say(dbMsg,"Hindi ma-refresh.")})});
   
 
-  btnSave.addEventListener("click",async function(){
-    if(!(await guard(dbMsg)))return;
-    btnSave.disabled=true;
+  var confirmUpd=false;
+  function updateMode(){
+    var cur=curId&&all.filter(function(d){return d.id===curId})[0];
+    $("editInfo").textContent=curId?("Nag-e-edit ng naka-save na record"+(cur?": "+title(cur):"")+". Papalitan ito ng I-update."):"Bagong notice: mase-save bilang bagong record.";
+    btnSave.textContent=curId?(confirmUpd?"Sigurado? Papalitan ang naka-save":"I-update ang record"):"I-save bilang bago";
+    $("btnSaveNew").hidden=!curId;
+  }
+  async function doSave(asNew){
+    var keep=curId;
+    if(!asNew&&curId&&!confirmUpd){confirmUpd=true;updateMode();say(dbMsg,"Pindutin ulit para palitan ang naka-save na record, o piliin ang I-save bilang bago.");return}
+    confirmUpd=false;
+    if(asNew)curId=null;
+    if(!(await guard(dbMsg))){curId=keep;render();return}
+    btnSave.disabled=true;var saved=false;
     try{
       var rec=window.NT.get();
       rec.id=curId||(window.crypto&&crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2,10));
       rec.updatedAt=Date.now();
       var r=await api("save",{record:rec});if(!r.ok)throw r;
-      curId=rec.id;await refresh();say(dbMsg,"Na-save sa database.");
+      curId=rec.id;saved=true;await refresh();say(dbMsg,(keep&&!asNew?"Napalitan ang record.":"Na-save bilang bagong record.")+" Para sa susunod na notice, pindutin ang Bagong notice.");
     }catch(e){say(dbMsg,((e&&e.error&&ERR[e.error])||"Hindi ma-save. Subukan ulit.")+(e&&e.detail?" ("+e.detail+")":""))}
-    liveCheck();
-  });
+    if(!saved)curId=keep;
+    render();
+  }
+  btnSave.addEventListener("click",function(){doSave(false)});
+  $("btnSaveNew").addEventListener("click",function(){doSave(true)});
+  $("form").addEventListener("input",function(){if(confirmUpd){confirmUpd=false;updateMode()}});
   $("btnNew").addEventListener("click",function(){
     curId=null;pendingDel=null;
-    window.NT.set({rows:[{n:"",a:"",t:""}],nDate:window.NT.get().nDate});
+    window.NT.set({rows:[{n:"",a:"",t:""}],nDate:window.NT.get().nDate,officer:window.NT.get().officer});
     say(dbMsg,"Bagong notice. I-save para madagdag sa database.");render();
   });
 
